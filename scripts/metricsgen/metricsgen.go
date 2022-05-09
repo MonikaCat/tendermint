@@ -88,8 +88,8 @@ func PrometheusMetrics(namespace string, labelsAndValues...string) *Metrics {
 		{{- if eq (len $metric.Labels) 0 }}
 		}, labels).With(labelsAndValues...),
 		{{ else }}
-		}, append(labels, {{$metric.Labels | printf "%q" }})).With(labelsAndValues...),
-		{{- end }}
+		}, append(labels, {{range $label := $metric.Labels }}{{ $label | printf "%q," }}{{ end }})).With(labelsAndValues...),
+		{{ end }}
 		{{- end }}
 	}
 }
@@ -110,7 +110,7 @@ type ParsedMetricField struct {
 	FieldName   string
 	MetricName  string
 	Description string
-	Labels      string
+	Labels      []string
 
 	HistogramOptions HistogramOpts
 }
@@ -279,14 +279,14 @@ func isMetric(e ast.Expr, mPkgName string) bool {
 	return strings.Contains(types.ExprString(e), fmt.Sprintf("%s.", mPkgName))
 }
 
-func extractLabels(bl *ast.BasicLit) string {
+func extractLabels(bl *ast.BasicLit) []string {
 	if bl != nil {
 		t := reflect.StructTag(strings.Trim(bl.Value, "`"))
 		if v := t.Get(labelsTag); v != "" {
-			return v
+			return strings.Split(v, ",")
 		}
 	}
-	return ""
+	return nil
 }
 
 func extractFieldName(name string, tag *ast.BasicLit) string {

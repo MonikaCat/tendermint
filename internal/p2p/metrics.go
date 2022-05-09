@@ -25,6 +25,8 @@ var (
 	valueToLabelRegexp = regexp.MustCompile(`\*?(\w+)\.(.*)`)
 )
 
+//go:generate github.com/tendermint/tendermint/metricsgen -struct=Metrics
+
 // Metrics contains metrics exposed by this package.
 type Metrics struct {
 	// Number of peers.
@@ -131,9 +133,6 @@ func PrometheusMetrics(namespace string, labelsAndValues ...string) *Metrics {
 			Name:      "router_channel_queue_msg_size",
 			Help:      "The size of messages sent over a peer's queue for a specific p2p Channel.",
 		}, append(labels, "ch_id")).With(labelsAndValues...),
-
-		mtx:               &sync.RWMutex{},
-		messageLabelNames: map[reflect.Type]string{},
 	}
 }
 
@@ -149,16 +148,19 @@ func NopMetrics() *Metrics {
 		RouterChannelQueueSend: discard.NewHistogram(),
 		PeerQueueDroppedMsgs:   discard.NewCounter(),
 		PeerQueueMsgSize:       discard.NewGauge(),
-		mtx:                    &sync.RWMutex{},
-		messageLabelNames:      map[reflect.Type]string{},
 	}
+}
+
+type MetricsLabelCache struct {
+	mtx               *sync.RWMutex
+	messageLabelNames map[reflect.Type]string
 }
 
 // ValueToMetricLabel is a method that is used to produce a prometheus label value of the golang
 // type that is passed in.
 // This method uses a map on the Metrics struct so that each label name only needs
 // to be produced once to prevent expensive string operations.
-func (m *Metrics) ValueToMetricLabel(i interface{}) string {
+func (m *MetricsLabelCache) ValueToMetricLabel(i interface{}) string {
 	t := reflect.TypeOf(i)
 	m.mtx.RLock()
 
@@ -175,4 +177,11 @@ func (m *Metrics) ValueToMetricLabel(i interface{}) string {
 	defer m.mtx.Unlock()
 	m.messageLabelNames[t] = l
 	return l
+}
+
+func NewMetricsLabelCache() *MetricsLabelCache {
+	return &MetricsLabelCache{
+		mtx:               &sync.RWMutex{},
+		messageLabelNames: map[reflect.Type]string{},
+	}
 }

@@ -10,7 +10,7 @@ const (
 	MetricsSubsystem = "mempool"
 )
 
-//go:generate go run github.com/tendermint/tendermint/scripts/metricsgen -struct=Metrics
+//go:generate go run ../../scripts/metricsgen -struct=Metrics
 
 // Metrics contains metrics exposed by this package.
 // see MetricsProvider for descriptions.
@@ -19,7 +19,7 @@ type Metrics struct {
 	Size metrics.Gauge
 
 	// Histogram of transaction sizes in bytes.
-	TxSizeBytes metrics.Histogram `metrics_buckettype:"exp" metrics_bucketsizes:"1, 3, 7"`
+	TxSizeBytes metrics.Histogram `metrics_buckettype:"exp" metrics_bucketsizes:"1,3,7"`
 
 	// Number of failed transactions.
 	FailedTxs metrics.Counter

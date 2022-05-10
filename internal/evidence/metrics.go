@@ -10,7 +10,7 @@ const (
 	MetricsSubsystem = "evidence_pool"
 )
 
-//go:generate go run github.com/tendermint/tendermint/scripts/metricsgen -struct=Metrics
+//go:generate go run ../../scripts/metricsgen -struct=Metrics
 
 // Metrics contains metrics exposed by this package.
 // see MetricsProvider for descriptions.

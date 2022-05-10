@@ -56,7 +56,7 @@ type Metrics struct {
 	PeerQueueMsgSize metrics.Gauge `metrics_labels:"ch_id" metric_name:"router_channel_queue_msg_size"`
 }
 
-type MetricsLabelCache struct {
+type metricsLabelCache struct {
 	mtx               *sync.RWMutex
 	messageLabelNames map[reflect.Type]string
 }
@@ -65,7 +65,7 @@ type MetricsLabelCache struct {
 // type that is passed in.
 // This method uses a map on the Metrics struct so that each label name only needs
 // to be produced once to prevent expensive string operations.
-func (m *MetricsLabelCache) ValueToMetricLabel(i interface{}) string {
+func (m *metricsLabelCache) ValueToMetricLabel(i interface{}) string {
 	t := reflect.TypeOf(i)
 	m.mtx.RLock()
 
@@ -84,8 +84,8 @@ func (m *MetricsLabelCache) ValueToMetricLabel(i interface{}) string {
 	return l
 }
 
-func NewMetricsLabelCache() *MetricsLabelCache {
-	return &MetricsLabelCache{
+func newMetricsLabelCache() *metricsLabelCache {
+	return &metricsLabelCache{
 		mtx:               &sync.RWMutex{},
 		messageLabelNames: map[reflect.Type]string{},
 	}

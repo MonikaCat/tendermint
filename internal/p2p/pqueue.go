@@ -70,7 +70,7 @@ var _ queue = (*pqScheduler)(nil)
 type pqScheduler struct {
 	logger       log.Logger
 	metrics      *Metrics
-	lc           *MetricsLabelCache
+	lc           *metricsLabelCache
 	size         uint
 	sizes        map[uint]uint // cumulative priority sizes
 	pq           *priorityQueue
@@ -89,7 +89,7 @@ type pqScheduler struct {
 func newPQScheduler(
 	logger log.Logger,
 	m *Metrics,
-	lc *MetricsLabelCache,
+	lc *metricsLabelCache,
 	chDescs []*ChannelDescriptor,
 	enqueueBuf, dequeueBuf, capacity uint,
 ) *pqScheduler {

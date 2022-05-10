@@ -149,7 +149,7 @@ type Router struct {
 	logger log.Logger
 
 	metrics *Metrics
-	lc      *MetricsLabelCache
+	lc      *metricsLabelCache
 
 	options     RouterOptions
 	privKey     crypto.PrivKey
@@ -195,7 +195,7 @@ func NewRouter(
 	router := &Router{
 		logger:           logger,
 		metrics:          metrics,
-		lc:               NewMetricsLabelCache(),
+		lc:               newMetricsLabelCache(),
 		privKey:          privKey,
 		nodeInfoProducer: nodeInfoProducer,
 		connTracker: newConnTracker(

@@ -9,7 +9,7 @@ import (
 )
 
 func TestValueToMetricsLabel(t *testing.T) {
-	lc := NewMetricsLabelCache()
+	lc := newMetricsLabelCache()
 	r := &p2p.PexResponse{}
 	str := lc.ValueToMetricLabel(r)
 	assert.Equal(t, "p2p_PexResponse", str)

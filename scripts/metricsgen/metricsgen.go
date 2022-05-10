@@ -252,7 +252,9 @@ func parseMetricField(f *ast.Field) ParsedMetricField {
 	var comment string
 	if f.Doc != nil {
 		for i, c := range f.Doc.List {
-			comment += strings.TrimPrefix(c.Text, "// ")
+			if str := strings.TrimPrefix(c.Text, "//"); len(str) > 0 {
+				comment += strings.TrimPrefix(str, " ")
+			}
 			if i < len(f.Doc.List)-1 {
 				comment += " "
 			}
